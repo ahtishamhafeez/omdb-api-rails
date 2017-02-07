@@ -3,6 +3,7 @@ class Movie < ApplicationRecord
 
   def self.search_movie(query)
     @movie= query
+
     @movieFromDb = Movie.where('title LIKE ?', "%#{@movie}%")
 
     # There are two ways to do the task ,
@@ -25,22 +26,29 @@ class Movie < ApplicationRecord
     #
     # end
 
+#    binding.pry
+
     json = JSON.parse(open("http://www.omdbapi.com?s=#{@movie}") { |x| x.read }).first
-
-    #  Above code is to get the response from the API and read the record from JSON Array to get the results
-
-    # binding.pry    use this for debugging from console
-if json[1]== "False"
-    puts "-----------------Error-------------------"
-else
-    data = json.last
-    # binding.pry
     @record = Array.new
     # Array To Store the full record
     @newRecordFromApi =  Array.new
     # Array To Store the new record
     @oldRecordFromDatabase = Array.new
     # Array To Store the database
+    #  Above code is to get the response from the API and read the record from JSON Array to get the results
+
+    # binding.pry    use this for debugging from console
+if json[1]== "False"
+  # rescue
+  # flash[:notice] = "ERROR"
+  # redirect_to(:action => 'index')
+  # return
+else
+
+    data = json.last
+
+    # binding.pry
+
     # binding.pry
     if(data)
       data.each do |fetch|
@@ -50,6 +58,7 @@ else
         #Here we will check that the record is new or old if new Then We will move the record into the @newRecordFromApi Array
 
         if movie.new_record?
+
           movie.save!
           @newRecordFromApi << fetch
           # binding.pry
@@ -65,10 +74,20 @@ else
         puts "Year :"+fetch["Year"]
         puts "Poster :"+fetch["Poster"]
       end
-      @oldRecordFromDatabase = @oldRecordFromDatabase | @movieFromDb
+
+      # binding.pry
+
+      if not @oldRecordFromDatabase.blank?
+
+
+        @oldRecordFromDatabase =  @movieFromDb + @oldRecordFromDatabase
+        @oldRecordFromDatabase = @oldRecordFromDatabase.uniq
+      end
+
     end
     puts"--------------------Record Retrurn#{data.size}"
     puts "-------------------------------Total Record Run  #{Movie.all.size}"
+
     # binding.pry
 
     #Made the All three response as hash to get access this response collectively in the controller of this class
