@@ -113,14 +113,20 @@ class MovieController < ApplicationController
 
     response=Movie.search_movie(params[:q])
     # response is  to be used as local variable
-      # if( response[:error].present?)
-      #   redirect_to()
-      # end
+    # binding.pry
+    if response[:error].present?
+        puts "********************????????????????? Record not founds  ?????????????????????????"
+        flash[:notice]="Record Not Found Please Type correct Name "
+        render template: 'movie/index'
+      # binding.pry
+      else
 
-    @newRecordFromApi=response['newRecordFromApi']
-    @oldRecordFromDatabase=response['oldRecordFromDatabase']
-    @record=response['record']
-    render status: 200    , template: 'movie/index'
+        @newRecordFromApi=response['newRecordFromApi']
+        @oldRecordFromDatabase=response['oldRecordFromDatabase']
+        @record=response['record']
+        render status: 200    , template: 'movie/index'
+      end
+
   end
   # Below function is only  for use in this controller that's why this is private
   private
