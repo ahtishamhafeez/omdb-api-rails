@@ -1,4 +1,4 @@
-
+require "open-uri"
 class Movie < ApplicationRecord
 
   def self.search_movie(query)
@@ -28,7 +28,16 @@ class Movie < ApplicationRecord
 
 #    binding.pry
 
-    json = JSON.parse(open("http://www.omdbapi.com?s=#{@movie}") { |x| x.read }).first
+    json = JSON.parse(open("http://www.omdbapi.com?s=#{@movie}") { |x| x.read })
+
+    # rescue OpenURI::HTTPError => error
+    # openUriresponse = error.io
+    # openUriresponse.status
+    # openUriresponse.string
+    # # return ["404.html", { :error => "Sorry, No Data returned. Message: #{openUriresponse.status}" }]
+    # # => <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n<html DIR=\"LTR\">\n<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"><meta name=\"viewport\" content=\"initial-scale=1\">...
+    # binding.pry
+
     @record = Array.new
     # Array To Store the full record
     @newRecordFromApi =  Array.new
@@ -39,13 +48,15 @@ class Movie < ApplicationRecord
 
     # binding.pry    use this for debugging from console
 if json[1]== "False"
+
+  binding.pry
   # rescue
   # flash[:notice] = "ERROR"
   # redirect_to(:action => 'index')
   # return
 else
 
-    data = json.last
+    data = json["Search"]
 
     # binding.pry
 
@@ -61,7 +72,7 @@ else
 
           movie.save!
           @newRecordFromApi << fetch
-          # binding.pry
+
           puts "************ This is New Record ************* "
         else
           #Here we will check that the record is new or old if old Then We will move the record into the @oldRecordFromDatabase Array

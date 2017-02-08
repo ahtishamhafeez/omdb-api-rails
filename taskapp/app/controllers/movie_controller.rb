@@ -1,5 +1,4 @@
 require "net/http"
-require "uri"
 require 'json'
 # The headers require for the JSON and HTTP request
 class MovieController < ApplicationController
@@ -114,6 +113,10 @@ class MovieController < ApplicationController
 
     response=Movie.search_movie(params[:q])
     # response is  to be used as local variable
+      # if( response[:error].present?)
+      #   redirect_to()
+      # end
+
     @newRecordFromApi=response['newRecordFromApi']
     @oldRecordFromDatabase=response['oldRecordFromDatabase']
     @record=response['record']
